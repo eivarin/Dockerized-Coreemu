@@ -27,6 +27,7 @@ RUN apt-get update -y && \
     uuid-dev \
     iproute2 \
     iputils-ping \
+    vim \
     tcpdump && \
     apt-get autoremove -y
 
