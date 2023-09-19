@@ -6,13 +6,10 @@
 - X11 display server
 
 ## Setup:
-- `xhost +local:root`
-- `docker-compose up`
+- `sh setup.sh` (This step may take a lot of time depending on your processor perfomance)
 
-## Run the GUI:
-- `docker-compose up -d` (start the backend. Not required after the first time setup)
-- `docker exec -it core core-gui` (start the frontend)
-
+## Run:
+- `./core-gui`
 
 ## NOTES/WARNINGS/TROUBLESHOUTING:
 - The first time setup takes a lot of time to run. Its dependant on the speed of the processor compiling both core and EMANE

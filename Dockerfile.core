@@ -61,5 +61,5 @@ RUN wget https://github.com/protocolbuffers/protobuf/releases/download/v${PROTOC
 
 WORKDIR /root
 
+# CMD ["bash", "-c", "sudo /opt/core/venv/bin/core-daemon & sleep 1 ; /opt/core/venv/bin/core-gui"]
 CMD ["bash", "-c", "sudo /opt/core/venv/bin/core-daemon"]
-
