@@ -7,9 +7,15 @@ services:
     container_name: core
     environment:
       - DISPLAY
+      - PULSE_SERVER=unix:/tmp/pulseaudio.socket
+      - PULSE_COOKIE=/tmp/pulseaudio.cookie
     volumes:
       - /tmp/.X11-unix:/tmp/.X11-unix:rw
       - ./src:/src
+      # - /tmp/pulseaudio.socket:/tmp/pulseaudio.socket
+      # - /tmp/pulseaudio.client.conf:/etc/pulse/client.conf
+    user: "${UID}:${GID}"
     privileged: true
     stdin_open: true 
     tty: true
+    # network_mode: host

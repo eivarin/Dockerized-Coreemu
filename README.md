@@ -3,7 +3,7 @@
 ## Requirements:
 - docker
 - docker-compose
-- X11 display server
+- X11 forwarding capability on linux and macos (not needed in windows)
 
 ## Setup:
 - `sh setup.sh` (This step may take a lot of time depending on your processor perfomance)

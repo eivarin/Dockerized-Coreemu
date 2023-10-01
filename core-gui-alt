@@ -1,0 +1,6 @@
+#!/bin/sh
+xhost + > /dev/null
+sudo iptables --policy FORWARD ACCEPT
+docker-compose up -d
+sleep 2
+docker exec -it core core-gui
