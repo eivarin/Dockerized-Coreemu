@@ -12,6 +12,7 @@ services:
     volumes:
       - /tmp/.X11-unix:/tmp/.X11-unix:rw
       - ./src:/src
+      - ./bashrc:/root/.bashrc
       # - /tmp/pulseaudio.socket:/tmp/pulseaudio.socket
       # - /tmp/pulseaudio.client.conf:/etc/pulse/client.conf
     user: "${UID}:${GID}"

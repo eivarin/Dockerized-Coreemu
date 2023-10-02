@@ -73,6 +73,7 @@ RUN apt-get install -y --no-install-recommends software-properties-common  && \
     libvdpau-dev \
     libva-dev \
     firefox \
+    mini-httpd \
     x11-apps && \
     sed -i 's/geteuid/getppid/' /usr/bin/vlc
 
