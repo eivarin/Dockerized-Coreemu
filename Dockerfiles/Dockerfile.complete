@@ -1,0 +1,13 @@
+# syntax=docker/dockerfile:1
+FROM eivarin/dockerizedcoreemu:v9.0.3-1
+
+RUN add-apt-repository ppa:wireshark-dev/stable -y
+
+RUN apt-get update -y
+
+RUN apt-get install -y --no-install-recommends \
+    wireshark && \
+    apt-get autoremove -y
+
+# CMD ["bash", "-c", "sudo /opt/core/venv/bin/core-daemon & sleep 1 ; /opt/core/venv/bin/core-gui"]
+CMD ["bash", "-c", "sudo /opt/core/venv/bin/core-daemon"]
