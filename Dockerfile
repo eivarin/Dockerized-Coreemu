@@ -27,7 +27,6 @@ RUN apt-get update -y && \
     uuid-dev \
     iproute2 \
     iputils-ping \
-    vim \
     tcpdump && \
     apt-get autoremove -y
 
@@ -58,24 +57,6 @@ RUN wget https://github.com/protocolbuffers/protobuf/releases/download/v${PROTOC
     rm -rf protoc && \
     rm -rf emane && \
     rm -f protoc-${PROTOC_VERSION}-linux-x86_64.zip
-
-RUN apt-get install -y --no-install-recommends software-properties-common  && \
-    sudo add-apt-repository ppa:mozillateam/ppa && \
-    echo '\nPackage: *\nPin: release o=LP-PPA-mozillateam\nPin-Priority: 1001' | sudo tee /etc/apt/preferences.d/mozilla-firefox && \
-    apt-get update -y && \
-    apt-get install -y --no-install-recommends \
-    vlc \
-    vlc-plugin-access-extra \
-    gpac \
-    wireshark \ 
-    ffmpeg \
-    zsh \
-    libvdpau-dev \
-    libva-dev \
-    firefox \
-    mini-httpd \
-    x11-apps && \
-    sed -i 's/geteuid/getppid/' /usr/bin/vlc
 
 WORKDIR /root
 
