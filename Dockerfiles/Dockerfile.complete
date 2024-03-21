@@ -9,5 +9,7 @@ RUN apt-get install -y --no-install-recommends \
     wireshark && \
     apt-get autoremove -y
 
+RUN apt-get install -y --no-install-recommends traceroute
+
 # CMD ["bash", "-c", "sudo /opt/core/venv/bin/core-daemon & sleep 1 ; /opt/core/venv/bin/core-gui"]
 CMD ["bash", "-c", "sudo /opt/core/venv/bin/core-daemon"]
