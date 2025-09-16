@@ -1,4 +1,4 @@
-name: Build and Push Docker Image
+name: Build and Push Docker Image With Qemu
 
 on:
   workflow_dispatch:
@@ -12,8 +12,6 @@ jobs:
   build-and-push:
     runs-on: ubuntu-latest
     steps:
-      - name: Set up QEMU
-        uses: docker/setup-qemu-action@v3
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
       - name: Build and push

@@ -1,29 +1,30 @@
-variable "VERSION_TAGS" {
-  type    = list(string)
-  default = [ "latest" ]
-}
-
-variable "IMAGE_NAME" {
+variable "DEFAULT_TAG" {
   type    = string
-  default = "ghcr.io/eivarin/dockerized-coreemu"
+  default = "ghcr.io/eivarin/dockerized-coreemu:local"
 }
 
-function "build_tag" {
-  params = [ version ]
-  result = "${IMAGE_NAME}:${version}"
+target "docker-metadata-action" {
+  tags = ["${DEFAULT_TAG}"]
 }
 
-target "base" {
-  context = "."
-  dockerfile = "Dockerfile"
-  tags = [for v in VERSION_TAGS : build_tag(v)]
-}
-
-target "ci" {
-  inherits = [ "base" ]
-  platforms = [ "linux/amd64", "linux/arm64" ]
+target "image" {
+  inherits = [ "docker-metadata-action" ] 
 }
 
 group "default" {
-  targets = [ "amd64" ]
+  targets = ["image-local"]
+}
+
+target "image-local" {
+  inherits = ["image"]
+  output = ["type=docker"]
+}
+
+target "ci" {
+  inherits = [ "image" ]
+}
+
+target "image-all" {
+  inherits = ["image"]
+  platforms = [ "linux/amd64", "linux/arm64" ]
 }
