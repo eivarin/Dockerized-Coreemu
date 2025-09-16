@@ -58,9 +58,8 @@ ENV PATH="$PATH:${VENV_PATH}/bin"
 WORKDIR /opt
 
 # install core
-RUN git clone https://github.com/coreemu/core && \
+RUN git clone --depth 1 --branch ${BRANCH} https://github.com/coreemu/core && \
     cd core && \
-    git checkout ${BRANCH} && \
     ./setup.sh && \
     PATH=/root/.local/bin:$PATH inv install -v -p ${PREFIX} && \
     cd /opt && \

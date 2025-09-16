@@ -21,6 +21,7 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       matrix: ${{ steps.platforms.outputs.matrix }}
+      coreemu_branch: ${{ steps.set_branch.outputs.coreemu_branch }}
     steps:
       - name: Checkout
         uses: actions/checkout@v5
@@ -56,6 +57,12 @@ jobs:
           path: ${{ runner.temp }}/bake-meta.json
           if-no-files-found: error
           retention-days: 1
+
+      - name: Set coreemu_branch output
+        if: github.event_name == 'push'
+        id: set_branch
+        run: |
+          echo "coreemu_branch=$(echo "${{ github.ref_name }}" | sed -E 's/_Coreemu//')" >> $GITHUB_OUTPUT
   build:
     runs-on: ${{ matrix.runner }}
     needs:
@@ -106,6 +113,7 @@ jobs:
             *.tags=${{ env.REGISTRY_IMAGE }}
             *.platform=${{ matrix.platform }}
             *.output=type=image,push-by-digest=true,name-canonical=true,push=true
+            ${{ (needs.prepare.outputs.coreemu_branch != '' && format('*.args.BRANCH={0}', needs.prepare.outputs.coreemu_branch)) || '' }}
 
       - name: Export digest
         run: |
