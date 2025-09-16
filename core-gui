@@ -1,3 +1,0 @@
-#!/bin/sh
-xhost +local:root > /dev/null
-docker-compose up -d & sleep 4 ; docker exec -it core core-gui

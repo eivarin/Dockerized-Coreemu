@@ -1,19 +1,16 @@
-# syntax=docker/dockerfile:1
 FROM ubuntu:22.04 AS base
-LABEL Description="CORE Docker Ubuntu Image"
-
-ARG TARGETARCH
-ARG PREFIX=/usr/local
-ARG BRANCH=master
-ARG PROTOC_VERSION=3.19.6
-ARG VENV_PATH=/opt/core/venv
 ENV DEBIAN_FRONTEND=noninteractive
-ENV PATH="$PATH:${VENV_PATH}/bin"
-WORKDIR /opt
-
 # install system dependencies
-RUN apt-get update -y && \
-    apt-get install -y --no-install-recommends \
+RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
+    --mount=type=cache,target=/var/lib/apt,sharing=locked \
+    apt update && apt-get --no-install-recommends install -y \
+    build-essential \
+    git gcc make vim libtk-img bash xterm \
+    sntp ntp wget lynx curl net-tools traceroute tcptraceroute \
+    ipcalc socat hping3 httpie whois ngrep \
+    tcpdump wireshark iperf iperf3 tshark openssh-server openssh-client openssh-sftp-server \
+    vsftpd atftp atftpd apache2 mini-httpd openvpn isc-dhcp-server isc-dhcp-client \
+    bind9 bind9-utils \
     ca-certificates \
     git \
     sudo \
@@ -29,8 +26,36 @@ RUN apt-get update -y && \
     iproute2 \
     iputils-ping \
     tcpdump \ 
+    python3-pip \
+    python3-venv \
+    automake \
+    pkg-config \
+    gcc \
+    libev-dev \
+    nftables \
+    ethtool \
+    tk \
+    bash \
+    python3-tk \
+    libtool \
+    gawk \
+    libreadline-dev \
     software-properties-common && \
     apt-get autoremove -y
+
+# syntax=docker/dockerfile:1
+FROM base AS app
+LABEL org.opencontainers.image.source=https://github.com/eivarin/Dockerized-Coreemu
+LABEL org.opencontainers.image.description="A dockerized image of Coreemu with X11 Forwarding capabilities for native like UI"
+
+ARG TARGETARCH
+ARG PREFIX=/usr/local
+ARG BRANCH=master
+ARG PROTOC_VERSION=3.19.6
+ARG VENV_PATH=/opt/core/venv
+ENV DEBIAN_FRONTEND=noninteractive
+ENV PATH="$PATH:${VENV_PATH}/bin"
+WORKDIR /opt
 
 # install core
 RUN git clone https://github.com/coreemu/core && \
@@ -64,17 +89,4 @@ RUN export protocZipFile=protoc-${PROTOC_VERSION}-linux-$(cat /arch).zip && \
 
 WORKDIR /root
 
-FROM base AS final
-
-LABEL org.opencontainers.image.source=https://github.com/eivarin/Dockerized-Coreemu
-LABEL org.opencontainers.image.description="A dockerized image of Coreemu with X11 Forwarding capabilities for native like UI"
-
-RUN add-apt-repository ppa:wireshark-dev/stable -y
-
-RUN apt-get update -y && apt-get install -y --no-install-recommends \
-    wireshark \
-    traceroute \
-    && apt-get autoremove -y
-
-# CMD ["bash", "-c", "sudo /opt/core/venv/bin/core-daemon & sleep 1 ; /opt/core/venv/bin/core-gui"]
 CMD ["bash", "-c", "sudo /opt/core/venv/bin/core-daemon"]

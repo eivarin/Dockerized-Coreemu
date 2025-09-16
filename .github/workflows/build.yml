@@ -14,7 +14,7 @@ on:
 
 env:
   REGISTRY: ghcr.io
-  REGISTRY_IMAGE: ghcr.io/eivarin/dockerized-coreemu
+  REGISTRY_IMAGE: ghcr.io/eivarin/coreemu
 
 jobs:
   prepare:
