@@ -1,7 +1,8 @@
 # syntax=docker/dockerfile:1
-FROM ubuntu:22.04
+FROM ubuntu:22.04 AS base
 LABEL Description="CORE Docker Ubuntu Image"
 
+ARG TARGETARCH
 ARG PREFIX=/usr/local
 ARG BRANCH=master
 ARG PROTOC_VERSION=3.19.6
@@ -39,11 +40,13 @@ RUN git clone https://github.com/coreemu/core && \
     PATH=/root/.local/bin:$PATH inv install -v -p ${PREFIX} && \
     cd /opt && \
     rm -rf ospf-mdr
-
+    
+RUN echo ${TARGETARCH} | sed s/arm64/aarch_64/ | sed s/amd64/x86_64/ >> /arch
 # install emane
-RUN wget https://github.com/protocolbuffers/protobuf/releases/download/v${PROTOC_VERSION}/protoc-${PROTOC_VERSION}-linux-x86_64.zip && \
+RUN export protocZipFile=protoc-${PROTOC_VERSION}-linux-$(cat /arch).zip && \
+    wget https://github.com/protocolbuffers/protobuf/releases/download/v${PROTOC_VERSION}/$protocZipFile && \
     mkdir protoc && \
-    unzip protoc-${PROTOC_VERSION}-linux-x86_64.zip -d protoc && \
+    unzip $protocZipFile -d protoc && \
     git clone https://github.com/adjacentlink/emane.git && \
     cd emane && \
     ./autogen.sh && \
@@ -57,9 +60,21 @@ RUN wget https://github.com/protocolbuffers/protobuf/releases/download/v${PROTOC
     cd /opt && \
     rm -rf protoc && \
     rm -rf emane && \
-    rm -f protoc-${PROTOC_VERSION}-linux-x86_64.zip
+    rm -f $protocZipFile
 
 WORKDIR /root
+
+FROM base AS final
+
+LABEL org.opencontainers.image.source=https://github.com/eivarin/Dockerized-Coreemu
+LABEL org.opencontainers.image.description="A dockerized image of Coreemu with X11 Forwarding capabilities for native like UI"
+
+RUN add-apt-repository ppa:wireshark-dev/stable -y
+
+RUN apt-get update -y && apt-get install -y --no-install-recommends \
+    wireshark \
+    traceroute \
+    && apt-get autoremove -y
 
 # CMD ["bash", "-c", "sudo /opt/core/venv/bin/core-daemon & sleep 1 ; /opt/core/venv/bin/core-gui"]
 CMD ["bash", "-c", "sudo /opt/core/venv/bin/core-daemon"]
