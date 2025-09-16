@@ -5,7 +5,7 @@ variable "VERSION_TAGS" {
 
 variable "IMAGE_NAME" {
   type    = string
-  default = "dockerizedcoreemu"
+  default = "ghcr.io/eivarin/dockerized-coreemu"
 }
 
 function "build_tag" {
