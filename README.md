@@ -1,21 +1,11 @@
 # Dockerized-CoreEmu
 
-## Requirements:
-- docker
-- docker-compose
-- X11 forwarding capability on linux and macos (not needed in windows)
+A dockerized image of Coreemu to easily set up and use the network emulator
 
-## Setup:
-- `sh setup.sh` (This step may take a lot of time depending on your processor perfomance)
+# Template
 
-## Run:
-- `./core-gui`
-
-## NOTES/WARNINGS/TROUBLESHOUTING:
-- The first time setup takes a lot of time to run. Its dependant on the speed of the processor compiling both core and EMANE
-- Use the `src` folder to get code inside the container. Its path in the container is /src/. Its a volume
-- You need to have the `DISPLAY` environment variable.
-- you may need to check the [coreemu postinstall guide](https://coreemu.github.io/core/install.html#resolving-docker-issues)
+To start using this Docker image, use the following template repository:  
+[Dockerized-Coreemu-Template](https://github.com/eivarin/Dockerized-Coreemu-Template)
 
 ---
 based of: [coreemu docker tutorial](https://coreemu.github.io/core/install.html#dockerfile-based-install)
