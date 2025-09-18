@@ -42,7 +42,7 @@ jobs:
             latest=auto
           tags: |
             type=raw,value=${{ inputs.tag }},enable=${{ inputs.tag != '' }}
-            type=semver,pattern={{raw}}
+            type=raw,value=${{ github.ref_name }},enable=${{ startswith(github.ref, 'refs/tags/') }}
 
       - name: Rename meta bake definition file
         run: |
