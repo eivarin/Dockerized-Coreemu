@@ -1,4 +1,4 @@
-# Dockerized-CoreEmu
+# Dockerized-Coreemu
 
 A dockerized image of Coreemu to easily set up and use the network emulator
 
