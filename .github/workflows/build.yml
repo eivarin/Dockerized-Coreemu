@@ -7,9 +7,8 @@ on:
         description: 'Comma-separated list of tags to apply to the image (e.g., latest,1.0,stable)'
         type: string
         default: ""
-  push:
-    tags:
-      - release-*
+  release:
+    types: [created]
 
 
 env:
@@ -21,7 +20,6 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       matrix: ${{ steps.platforms.outputs.matrix }}
-      coreemu_branch: ${{ steps.set_branch.outputs.coreemu_branch }}
     steps:
       - name: Checkout
         uses: actions/checkout@v5
@@ -44,7 +42,7 @@ jobs:
             latest=auto
           tags: |
             type=raw,value=${{ inputs.tag }},enable=${{ inputs.tag != '' }}
-            type=match,pattern=release-(.*),group=1
+            type=semver,pattern={{raw}}
 
       - name: Rename meta bake definition file
         run: |
@@ -58,11 +56,6 @@ jobs:
           if-no-files-found: error
           retention-days: 1
 
-      - name: Set coreemu_branch output
-        if: github.event_name == 'push'
-        id: set_branch
-        run: |
-          echo "coreemu_branch=$(echo "${{ github.ref_name }}" | sed -E 's/_Coreemu//')" >> $GITHUB_OUTPUT
   build:
     runs-on: ${{ matrix.runner }}
     needs:
@@ -113,7 +106,6 @@ jobs:
             *.tags=${{ env.REGISTRY_IMAGE }}
             *.platform=${{ matrix.platform }}
             *.output=type=image,push-by-digest=true,name-canonical=true,push=true
-            ${{ (needs.prepare.outputs.coreemu_branch != '' && format('*.args.BRANCH={0}', needs.prepare.outputs.coreemu_branch)) || '' }}
 
       - name: Export digest
         run: |
