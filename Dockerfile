@@ -10,7 +10,7 @@ RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
     ipcalc socat hping3 httpie whois ngrep \
     tcpdump wireshark iperf iperf3 tshark openssh-server openssh-client openssh-sftp-server \
     vsftpd atftp atftpd apache2 mini-httpd openvpn isc-dhcp-server isc-dhcp-client \
-    bind9 bind9-utils \
+    bind9 bind9-utils dnsutils inetutils-telnet \
     ca-certificates \
     git \
     sudo \
