@@ -27,21 +27,21 @@ based of: [coreemu docker tutorial](https://coreemu.github.io/core/install.html#
 This repository provides two Docker images:
 
 -   `ghcr.io/eivarin/coreemu`: The base image with CORE EMU.
--   `ghcr.io/eivarin/coreemu-utils`: The base image with additional utilities (e.g., `net-tools`).
+-   `ghcr.io/eivarin/coreemu-cc25`: The base image with additional utilities (e.g., `net-tools`).
 
 ## Versioning
 
 The images are versioned based on the CORE EMU version.
 
 -   The base image is tagged as `ghcr.io/eivarin/coreemu:<core-emu-version>` and `ghcr.io/eivarin/coreemu:latest`.
--   The utils image is tagged as `ghcr.io/eivarin/coreemu:<core-emu-version>-utils` and `ghcr.io/eivarin/coreemu:utils`.
+-   The cc25 image is tagged as `ghcr.io/eivarin/coreemu:<core-emu-version>-cc25` and `ghcr.io/eivarin/coreemu:cc25`.
 
 For example, for CORE EMU version `9.2.1`, the following images will be available:
 
 -   `ghcr.io/eivarin/coreemu:9.2.1`
 -   `ghcr.io/eivarin/coreemu:latest`
--   `ghcr.io/eivarin/coreemu:9.2.1-utils`
--   `ghcr.io/eivarin/coreemu:utils`
+-   `ghcr.io/eivarin/coreemu:9.2.1-cc25`
+-   `ghcr.io/eivarin/coreemu:cc25`
 
 ## Building Locally
 
@@ -54,8 +54,8 @@ docker buildx bake
 # Build a specific image
 docker buildx bake core-emu
 
-# Build the utils image
-docker buildx bake utils
+# Build the cc25 image
+docker buildx bake cc25
 ```
 
 The images will be built for both `linux/amd64` and `linux/arm64` platforms.
