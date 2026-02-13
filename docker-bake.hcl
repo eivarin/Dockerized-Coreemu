@@ -1,29 +1,32 @@
-variable "DEFAULT_TAG" {
-  type    = string
-  default = "ghcr.io/eivarin/coreemu:local"
+variable "CORE_EMU_VERSION" {
+  default = "9.2.1"
+}
+
+variable "IMAGE_NAME" {
+  default = "ghcr.io/eivarin/coreemu"
 }
 
 group "default" {
-  targets = ["image-local"]
+  targets = ["core-emu", "cc25"]
 }
 
-target "docker-metadata-action" {
-  tags = ["${DEFAULT_TAG}"]
-}
-
-target "image" {
-  inherits = [ "docker-metadata-action" ] 
+target "core-emu" {
+  dockerfile = "dockerfiles/Dockerfile.core-emu"
+  tags       = ["${IMAGE_NAME}:${CORE_EMU_VERSION}", "${IMAGE_NAME}:latest"]
+  platforms  = ["linux/amd64", "linux/arm64"]
   args = {
-    BRANCH = "release-9.2.1"
+    BRANCH = "release-${CORE_EMU_VERSION}"
   }
 }
 
-target "image-local" {
-  inherits = ["image"]
-  output = ["type=docker"]
-}
-
-target "image-all" {
-  inherits = ["image"]
-  platforms = [ "linux/amd64", "linux/arm64" ]
+target "cc25" {
+  dockerfile = "dockerfiles/Dockerfile.cc25"
+  tags       = ["${IMAGE_NAME}:${CORE_EMU_VERSION}-cc25", "${IMAGE_NAME}:cc25"]
+  platforms  = ["linux/amd64", "linux/arm64"]
+  args = {
+    BASE_IMAGE = "${IMAGE_NAME}:${CORE_EMU_VERSION}"
+  }
+  contexts = {
+    "${IMAGE_NAME}:${CORE_EMU_VERSION}" = "target:core-emu"
+  }
 }

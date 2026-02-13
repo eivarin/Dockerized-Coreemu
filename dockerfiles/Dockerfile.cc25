@@ -1,0 +1,11 @@
+ARG BASE_IMAGE=coreemu:latest
+FROM ${BASE_IMAGE}
+
+RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
+    --mount=type=cache,target=/var/lib/apt,sharing=locked \
+    apt update && apt-get --no-install-recommends install -y \
+    sntp ntp wget lynx curl net-tools traceroute tcptraceroute \
+    ipcalc socat hping3 httpie whois ngrep \
+    tcpdump wireshark iperf iperf3 tshark openssh-server openssh-client openssh-sftp-server \
+    vsftpd atftp atftpd apache2 mini-httpd openvpn isc-dhcp-server isc-dhcp-client dnsutils && \
+    apt-get autoremove -y
