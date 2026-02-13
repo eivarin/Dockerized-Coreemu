@@ -1,18 +1,13 @@
 FROM ubuntu:22.04 AS base
+
 ENV DEBIAN_FRONTEND=noninteractive
 # install system dependencies
 RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
     --mount=type=cache,target=/var/lib/apt,sharing=locked \
     apt update && apt-get --no-install-recommends install -y \
     build-essential \
-    git gcc make vim libtk-img bash xterm \
-    sntp ntp wget lynx curl net-tools traceroute tcptraceroute \
-    ipcalc socat hping3 httpie whois ngrep \
-    tcpdump wireshark iperf iperf3 tshark openssh-server openssh-client openssh-sftp-server \
-    vsftpd atftp atftpd apache2 mini-httpd openvpn isc-dhcp-server isc-dhcp-client \
-    bind9 bind9-utils dnsutils inetutils-telnet \
-    ca-certificates \
     git \
+    ca-certificates \
     sudo \
     wget \
     tzdata \
@@ -30,7 +25,6 @@ RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
     python3-venv \
     automake \
     pkg-config \
-    gcc \
     libev-dev \
     nftables \
     ethtool \
@@ -87,5 +81,16 @@ RUN export protocZipFile=protoc-${PROTOC_VERSION}-linux-$(cat /arch).zip && \
     rm -f $protocZipFile
 
 WORKDIR /root
+
+RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
+    --mount=type=cache,target=/var/lib/apt,sharing=locked \
+    apt update && apt-get --no-install-recommends install -y \
+    vim nano libtk-img bash kitty wireshark && \
+    apt-get autoremove -y
+
+
+RUN mkdir -p /root/.coregui
+
+COPY config.yaml /root/.coregui/config.yaml
 
 CMD ["bash", "-c", "sudo /opt/core/venv/bin/core-daemon"]
