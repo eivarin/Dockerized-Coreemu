@@ -32,6 +32,9 @@ jobs:
       id-token: write
     steps:
 
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
       - name: Generate meta bake definition
         run: |
           docker buildx bake --print . > ${{ runner.temp }}/bake-meta.json
@@ -79,6 +82,10 @@ jobs:
       attestations: write
       id-token: write
     steps:
+
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
       - name: Generate meta bake definition
         run: |
           docker buildx bake --print . > ${{ runner.temp }}/bake-meta.json
