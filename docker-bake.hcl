@@ -11,7 +11,7 @@ group "default" {
 }
 
 target "core-emu" {
-  dockerfile = "dockerfiles/Dockerfile.core-emu"
+  dockerfile = "dockerfiles/Dockerfile"
   tags       = ["${IMAGE_NAME}:${CORE_EMU_VERSION}", "${IMAGE_NAME}:latest"]
   platforms  = ["linux/amd64", "linux/arm64"]
   args = {
