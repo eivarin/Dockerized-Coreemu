@@ -8,32 +8,100 @@ on:
 
 env:
   REGISTRY: ghcr.io
+  REGISTRY_IMAGE: ghcr.io/eivarin/coreemu
 
 jobs:
-  build_and_push:
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      packages: write
+  build:
+    name: Build images for multiple platforms
+    runs-on: ${{ matrix.runs_on }}
+    strategy:
+      matrix:
+        include:
+          - arch: amd64
+            platform: linux/amd64
+            runs_on: ubuntu-latest
+          - arch: arm64
+            platform: linux/arm64
+            runs_on: ubuntu-22.04-arm
     steps:
-      - name: Checkout repository
+      - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Log in to the Container registry
-        uses: docker/login-action@v3
+      - name: Log in to registry
+        uses: docker/login-action@v2
         with:
           registry: ${{ env.REGISTRY }}
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Set up QEMU
-        uses: docker/setup-qemu-action@v3
-
       - name: Set up Docker Buildx
-        id: buildx
-        uses: docker/setup-buildx-action@v3
+        uses: docker/setup-buildx-action@v2
 
-      - name: Build and push
-        uses: docker/bake-action@v6
+      - name: Build & push image for ${{ matrix.arch }} (docker bake)
+        run: |
+          docker buildx bake --file docker-bake.hcl \
+            --set core-emu.tags=${{ env.REGISTRY_IMAGE }}:latest-${{ matrix.arch }},${{ env.REGISTRY_IMAGE }}:${{ github.sha }}-${{ matrix.arch }} \
+            --set core-emu.platform=${{ matrix.platform }} \
+            --push
+
+      - name: Record produced image tags
+        run: |
+          echo "${{ env.REGISTRY_IMAGE }}:latest-${{ matrix.arch }}" > image.txt
+          echo "${{ env.REGISTRY_IMAGE }}:${{ github.sha }}-${{ matrix.arch }}" >> image.txt
+
+      - name: Upload image artifact for ${{ matrix.arch }}
+        uses: actions/upload-artifact@v4
         with:
-          push: true
+          name: image-${{ matrix.arch }}
+          path: image.txt
+
+  create-manifest:
+    name: Create multi-arch manifest
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Checkout (for context)
+        uses: actions/checkout@v4
+
+      - name: Log in to registry
+        uses: docker/login-action@v2
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Install docker buildx imagetools (if needed)
+        run: |
+          docker buildx version || true
+
+      - name: Download built image artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: ./images
+
+      - name: Read image tags
+        id: read-images
+        run: |
+          set -euo pipefail
+          for arch in amd64 arm64; do
+            file="./images/image-${arch}/image.txt"
+            if [ ! -f "$file" ]; then
+              echo "Missing $file"
+              ls -la ./images || true
+              exit 1
+            fi
+            latest=$(sed -n '1p' "$file")
+            sha=$(sed -n '2p' "$file")
+            echo "${arch}_latest=$latest" >> $GITHUB_OUTPUT
+            echo "${arch}_sha=$sha" >> $GITHUB_OUTPUT
+          done
+
+      - name: Create and push multi-arch manifest (latest)
+        run: |
+          docker buildx imagetools create -t ${{ env.REGISTRY_IMAGE }}:latest \
+            ${{ steps.read-images.outputs.amd64_latest }} ${{ steps.read-images.outputs.arm64_latest }} --push
+
+      - name: Create and push multi-arch manifest (sha)
+        run: |
+          docker buildx imagetools create -t ${{ env.REGISTRY_IMAGE }}:${{ github.sha }} \
+            ${{ steps.read-images.outputs.amd64_sha }} ${{ steps.read-images.outputs.arm64_sha }} --push
