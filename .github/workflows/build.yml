@@ -113,7 +113,3 @@ jobs:
         run: |
           docker buildx imagetools create $(jq -cr '.target."core-emu".tags | map(select(startswith("${{ env.REGISTRY_IMAGE }}")) | "-t " + .) | join(" ")' ${{ runner.temp }}/bake-meta.json) \
             $(printf '${{ env.REGISTRY_IMAGE }}@sha256:%s ' *)
-
-      - name: Inspect image
-        run: |
-          docker buildx imagetools inspect ${{ env.REGISTRY_IMAGE }}:$(jq -r '.target."core-emu".args.DOCKER_META_VERSION' ${{ runner.temp }}/bake-meta.json)
