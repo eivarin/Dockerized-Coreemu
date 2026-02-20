@@ -7,7 +7,7 @@ variable "IMAGE_NAME" {
 }
 
 group "default" {
-  targets = ["core-emu", "cc25"]
+  targets = ["core-emu"]
 }
 
 target "core-emu" {
@@ -16,17 +16,5 @@ target "core-emu" {
   platforms  = ["linux/amd64", "linux/arm64"]
   args = {
     BRANCH = "release-${CORE_EMU_VERSION}"
-  }
-}
-
-target "cc25" {
-  dockerfile = "dockerfiles/Dockerfile.cc25"
-  tags       = ["${IMAGE_NAME}:${CORE_EMU_VERSION}-cc25", "${IMAGE_NAME}:cc25"]
-  platforms  = ["linux/amd64", "linux/arm64"]
-  args = {
-    BASE_IMAGE = "${IMAGE_NAME}:${CORE_EMU_VERSION}"
-  }
-  contexts = {
-    "${IMAGE_NAME}:${CORE_EMU_VERSION}" = "target:core-emu"
   }
 }
