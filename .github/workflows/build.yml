@@ -55,6 +55,7 @@ jobs:
         with:
           targets: core-emu
           set: |
+            *.tags=${{ env.REGISTRY_IMAGE }}
             *.platform=${{ matrix.platform }}
             *.output=type=image,push-by-digest=true,name-canonical=true,push=true
 
