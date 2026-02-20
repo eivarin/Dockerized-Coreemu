@@ -85,7 +85,7 @@ WORKDIR /root
 RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
     --mount=type=cache,target=/var/lib/apt,sharing=locked \
     apt update && apt-get --no-install-recommends install -y \
-    vim nano libtk-img bash kitty wireshark && \
+    vim nano libtk-img bash kitty wireshark netcat && \
     apt-get autoremove -y
 
 
